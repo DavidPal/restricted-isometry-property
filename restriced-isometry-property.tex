@@ -1,0 +1,300 @@
+\documentclass[12pt]{article}
+
+\usepackage{fullpage,amssymb,amsmath,amsthm}
+
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{theorem}[definition]{Theorem}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\norm}[1]{\|{#1}\|}
+
+\DeclareMathOperator*{\Var}{\mathbf{Var}}
+\DeclareMathOperator*{\Exp}{\mathbf{E}}
+
+\begin{document}
+
+\title{Restricted Isometry Property}
+\author{D\'avid P\'al}
+\maketitle
+
+\section{Sub-Gaussian Random Variables}
+
+\begin{definition}[Sub-Gaussian random variable]
+A random variable $X$ is called \emph{$\sigma^2$-sub-Gaussian} if
+$$
+\forall s \in \R \qquad \Exp\left[ \exp \left( s X \right) \right] \le \exp\left( \frac{\sigma^2 s^2}{2} \right) \; .
+$$
+\end{definition}
+
+\begin{proposition}[Mean and Variance]
+\label{proposition:sub-gaussian-mean-and-variance}
+Let $X$ be a $\sigma^2$-sub-Gaussian random variable.
+Then, $\Exp[X] = 0$ and $\Var[X] = \Exp[X^2] \le \sigma^2$.
+\end{proposition}
+
+\begin{proof}
+Let $M(s) = \Exp[\exp(sX)]$ be the moment generating function of $X$.
+Let $G(s) = \exp\left( \frac{\sigma^2 s^2}{2} \right)$.
+By sub-Gaussianity, $M(s) \le G(s)$ for all $s \in \R$.
+The derivatives of $M(s)$ and $G(s)$ are
+\begin{align*}
+M'(s) & = \Exp\left[ \frac{\partial}{\partial s}  \exp(sX) \right] = \Exp[X \exp(sX)] \\
+G'(s) & = \sigma^2 s \exp\left( \frac{\sigma^2 s}{2} \right) \; .
+\end{align*}
+Since $M(0) = G(0) = 1$ and $G'(0) = 0$, the sub-Gaussian condition $M(s) \le G(s)$
+implies that $M'(0) = 0$, and hence $M'(0) = \Exp[X] = 0$.
+
+Similarly, $M(0) = G(0) = 1$ and $M'(0) = G'(0) = 0$, and the sub-Gaussian condition $M(s) \le G(s)$
+imply that $M''(0) \le G''(0)$. The second derivatives are
+\begin{align*}
+M''(s) & = \Exp\left[ \frac{\partial^2}{\partial s^2}  \exp(sX) \right] = \Exp[X^2 \exp(sX)] \\
+G''(s) & = (\sigma^4 s^2 + \sigma^2) \exp \left( \frac{\sigma^2 s^2}{2} \right) \; .
+\end{align*}
+Hence, $M''(0) \le G''(0)$ is equivalent with $\Var[X] = \Exp[X^2] \le \sigma^2$.
+\end{proof}
+
+\begin{proposition}[Scaling]
+Let $X$ be $\sigma^2$-sub-Gaussian random variable.
+Then, for any $a \in \R$, $aX$ is $a^2\sigma^2$-sub-Gaussian.
+\end{proposition}
+
+\begin{proof}
+For any $s \in \R$, we have
+$$
+\Exp[\exp(s(aX)] = \Exp[\exp((sa) X] \le \exp\left( \frac{\sigma^2 a^2 s^2}{2} \right) \; .
+$$
+\end{proof}
+
+\begin{proposition}[Sum of independent variables]
+Let $X_1, X_2, \dots, X_n$ be independent random variables
+such that $X_i$ is $\sigma_i$-sub-Gaussian for $i=1,2,\dots,n$.
+Then, the random variable
+$X_1 + X_2 + \dots + X_n$ is $\left(\sum_{i=1}^n \sigma_i^2\right)$-sub-Gaussian.
+\end{proposition}
+
+\begin{proof}
+For any $s \in \R$, we have
+\begin{align*}
+\Exp\left[\exp\left(s \sum_{i=1}^n X_i \right)\right]
+& = \Exp \left[\prod_{i=1}^n \exp\left(s X_i \right) \right] \\
+& = \prod_{i=1}^n \Exp[\exp\left(s X_i \right)] & \text{(independence)} \\
+& \le \prod_{i=1}^n \exp\left( \frac{\sigma_i^2 s^2}{2} \right) \\
+& = \exp\left( \frac{\sum_{i=1}^n \sigma_i^2 s^2}{2} \right) \; .
+\end{align*}
+\end{proof}
+
+\begin{lemma}[Tail Probability]
+\label{lemma:tail-probability}
+Let $X$ be a $\sigma^2$-sub-Gaussian random variable. Then, for any $t > 0$,
+\begin{align*}
+\Pr[X \ge t] & \le \exp\left( - \frac{t}{2 \sigma^2} \right) \; , \\
+\Pr[X \le -t] & \le \exp\left( - \frac{t}{2 \sigma^2} \right) \; , \\
+\Pr[|X| \ge t] & \le 2\exp\left( - \frac{t}{2 \sigma^2} \right) \; .
+\end{align*}
+\end{lemma}
+
+\begin{proof}
+For any $s > 0$, by Markov's inequality and sub-Gaussianity,
+$$
+\Pr[X \ge t]
+= \Pr\left[ \exp(sX) \ge \exp(st) \right]
+\le \frac{\exp(sX)}{\exp(st)}
+\le \frac{\exp(\frac{\sigma^2 s^2}{2})}{\exp(st)} \; .
+$$
+Choosing $s = \frac{t}{\sigma^2}$, the last expression becomes
+$\exp\left(-\frac{t}{2 \sigma^2}\right)$. The bound on $\Pr[X \le -t]$ is
+symmetrical. Finally, the last bound follows since $\Pr[|X| \ge t] = \Pr[X \ge t] +
+\Pr[X \ge - t]$.
+\end{proof}
+
+\begin{lemma}[Moments]
+\label{lemma:sub-gaussian-moments}
+Let $X$ be a $\sigma^2$-sub-Gaussian random variable. For any $p > 0$,
+$$
+\Exp\left[ \left|X\right|^p \right] \le 2^{p/2} \sigma^p p \Gamma(p/2)
+$$
+where $\Gamma(p) = \int_0^\infty x^{p-1} e^{-x} dx$ is Euler's gamma function.
+In particular, for $p=1$,
+$$
+\Exp[|X|] \le \sigma \sqrt{2 \pi} \; .
+$$
+\end{lemma}
+
+\begin{proof}
+We have
+\begin{align*}
+\Exp[|X|^p]
+& = \int_0^\infty \Pr[|X|^p \ge t] dt \\
+& = \int_0^\infty \Pr[|X| \ge t^{1/p}] dt \\
+& \le \int_0^\infty 2\exp\left( - \frac{t^{2/p}}{2 \sigma^2} \right) dt & \text{(by Lemma~\ref{lemma:tail-probability})} \\
+& = 2^{p/2} \sigma^p p \int_0^\infty e^{-u} u^{p/2-1} du & \text{(substitute $u=\frac{t^{2/p}}{2\sigma^2}$)} \\
+& = 2^{p/2} \sigma^p p \Gamma(p/2) \; .
+\end{align*}
+\end{proof}
+
+\begin{definition}[Sub-Gaussian random vector]
+Let $X$ be a random vector in $\R^d$. We say that $X$ is \emph{$\sigma^2$-sub-Gaussian}
+if
+$$
+\forall u \in \R^d \qquad \Exp\left[ \exp \left( X^T u \right) \right] \le \exp\left( \frac{\sigma^2 \norm{u}_2^2}{2} \right) \; .
+$$
+\end{definition}
+
+\section{Sub-Exponential Random Variables}
+
+\begin{definition}[Sub-exponential random variable]
+A random variable $X$ is called $\lambda$-sub-exponential if
+$$
+\forall s \in \left[ - \frac{1}{\lambda}, \frac{1}{\lambda} \right] \qquad \Exp\left[ \exp \left( s X \right) \right] \le \exp\left( \frac{\lambda^2 s^2}{2} \right) \; .
+$$
+\end{definition}
+
+\begin{proposition}[Mean and Variance]
+Let $X$ be a $\lambda$-sub-exponential random variable.
+Then, $\Exp[X] = 0$ and $\Var[X] = \Exp[X^2] \le \lambda^2$.
+\end{proposition}
+
+\begin{proof}
+Proof is identical to the proof of Proposition~\ref{proposition:sub-gaussian-mean-and-variance}.
+\end{proof}
+
+\begin{lemma}[Square of sub-Gaussian]
+\label{lemma:sub-gaussian-square}
+Let $X$ be a $\sigma^2$-sub-Gaussian random variable.
+Then, $Y = X^2 - \Exp[X^2]$ is $11\sigma^2$-sub-exponential.
+\end{lemma}
+
+\begin{proof}
+For any $s \in [-\frac{1}{11\sigma^2}, \frac{1}{11\sigma^2}]$
+\begin{align*}
+\Exp\left[e^{sY}\right]
+& = \Exp\left[ \sum_{k=0}^\infty \frac{s^k Y^k}{k!} \right] & \text{(Taylor expansion for $e^z$)} \\
+& = \sum_{k=0}^\infty \frac{s^k \Exp[Y^k]}{k!} \\
+& = 1 + \sum_{k=2}^\infty \frac{s^k \Exp[Y^k]}{k!} & \text{(since $\Exp[Y] = 0$)} \\
+& = 1 + \sum_{k=2}^\infty \frac{s^k \Exp[(X^2 - \Exp[X^2])^k]}{k!} \\
+& \le 1 + \sum_{k=2}^\infty \frac{|s|^k \cdot \Exp[\left|X^2 - \Exp[X^2]\right|^k]}{k!} \\
+& \le 1 + \sum_{k=2}^\infty \frac{|s|^k \cdot \Exp \left[(X^2 + \Exp[X^2])^k \right]}{k!} & \text{(since $|a - b| \le a + b$ for $a,b \ge 0$)} \\
+& \le 1 + \sum_{k=2}^\infty \frac{|s|^k \Exp\left[2^{k-1} X^{2k} + 2^{k-1} \Exp[X^2]^k \right]}{k!} & \text{(convexity of $z^k$ for $z \ge 0$)} \\
+& \le 1 + \sum_{k=2}^\infty \frac{|s|^k \Exp\left[2^{k-1} X^{2k} + 2^{k-1} \Exp[X^{2k}] \right]}{k!} & \text{(convexity of $z^k$ again)} \\
+& = 1 + \sum_{k=2}^\infty \frac{|s|^k 2^k \Exp\left[X^{2k} \right]}{k!} \\
+& \le 1 + \sum_{k=2}^\infty \frac{|s|^k 4^k \sigma^{2k} 2k \Gamma(k)}{k!} & \text{(Lemma~\ref{lemma:sub-gaussian-moments})} \\
+& = 1 + 2 \sum_{k=2}^\infty |s|^k 4^k \sigma^{2k} & \text{(since $\Gamma(k) = (k-1)!$)} \\
+& = 1 + 32 s^2 \sigma^4 \sum_{k=0}^\infty |s|^k 4^k \sigma^{2k} \\
+& \le 1 + 32 s^2 \sigma^4 \sum_{k=0}^\infty \left(\frac{4}{11}\right)^k & \text{(since $|s| \le \frac{1}{11\sigma^2}$)} \\
+& = 1 + 32 s^2 \sigma^4 \cdot \frac{11}{7} \\
+& \le 1 + \frac{121}{2} s^2 \sigma^4 \\
+& \le \exp\left(\frac{121}{2} s^2 \sigma^4 \right) & \text{(using $1+z \le e^z$)} \\
+& = \exp\left(\frac{(11 \sigma^2)^2 s^2}{2} \right) \; .
+\end{align*}
+\end{proof}
+
+\begin{theorem}[Bernstein's inequality]
+\label{theorem:bernstein-inequality}
+Let $X_1, X_2, \dots, X_n$ be independent $\lambda$-sub-exponential
+random variables. Then, for any $t > 0$,
+$$
+\Pr\left[ \sum_{i=1}^n X_i \ge t \right]
+\le
+\exp\left( - \min \left\{ \frac{t^2}{2n\lambda^2}, \ \frac{t}{2\lambda} \right\} \right) \; .
+$$
+The same upper bound holds for $\Pr[\sum_{i=1}^n X_i \le - t]$.
+\end{theorem}
+
+\begin{proof}
+By Markov's inequality and sub-exponentiality, for any $s \in \left(0, \frac{1}{\lambda} \right]$,
+\begin{align*}
+\Pr\left[ \sum_{i=1}^n X_i \ge t \right]
+& = \Pr\left[ \exp\left(s \sum_{i=1}^n X_i \right) \ge \exp(st) \right] \\
+& \le \frac{\Exp \left[ \exp(s \sum_{i=1}^n X_i) \right]}{\exp(st)} \\
+& = \frac{\prod_{i=1}^n \Exp \left[ \exp(s X_i) \right]}{\exp(st)} \\
+& \le \exp\left( \frac{n \lambda^2 s^2}{2} - st \right) \; .
+\end{align*}
+To upper bound the last expression inside the exponential, consider two cases.
+If $t \le n \lambda$, substitute $s = \frac{t}{n\lambda^2}$ and note that $s \le \frac{1}{\lambda}$
+to get
+\begin{equation}
+\label{equation:bernstein-1}
+\frac{n \lambda^2 s^2}{2} - st \le - \frac{t^2}{2n\lambda^2} \; .
+\end{equation}
+If $t > n \lambda$, substitute $s=\frac{1}{\lambda}$ and get
+\begin{equation}
+\label{equation:bernstein-2}
+\frac{n \lambda^2 s^2}{2} - st \le \frac{n}{2} - \frac{t}{\lambda} \le - \frac{t}{2\lambda} \; .
+\end{equation}
+We can write \eqref{equation:bernstein-1} and \eqref{equation:bernstein-2}
+together more compactly for the whole range of $t \in (0, \infty)$ as
+$$
+\frac{n \lambda^2 s^2}{2} - st
+\le
+\begin{cases}
+- \frac{t^2}{2n\lambda^2} & \text{if $t \in (0, n\lambda] $} \\
+- \frac{t}{2\lambda} & \text{if $t > n \lambda$}
+\end{cases}
+= - \min \left\{ \frac{t^2}{2n\lambda^2}, \ \frac{t}{2\lambda} \right\} \; .
+$$
+The bound on $\Pr[\sum_{i=1}^n X_i \le - t]$ follows from the bound
+$\Pr\left[ \sum_{i=1}^n X_i \ge t \right]$ by replacing $X_i$ with $-X_i$
+and noting that $-X_i$ is $\lambda$-sub-exponential.
+\end{proof}
+
+
+
+\section{Restricted Isometry Property}
+
+\begin{definition}[Restricted Isometry Property]
+Let $X$ be an $n \times d$ real matrix, let $\epsilon \in (0,1)$, and let $k \in
+\{0,1,\dots,d\}$. We say that $X$ satisfies \emph{restricted isometry property
+(RIP) with parameters $(\epsilon, k)$} if for any vector $w \in \R^d$ such that
+$\norm{w}_0 \le k$ we have
+$$
+\norm{X w}_2 \ge (1 - \epsilon) \norm{w}_2 \; .
+$$
+\end{definition}
+
+\begin{definition}[Isotropic random vector]
+Let $X$ be a random vector in $\R^d$ such that $\Exp[X] = 0$.
+We say that $X$ is \emph{isotropic} if $\Exp[X X^T] = I$ where $I$
+is the $d \times d$ identity matrix.
+\end{definition}
+
+
+\begin{lemma}
+Let $X_1, X_2, \dots, X_n$ be independent isotropic $1$-sub-Gaussian random
+vectors in $\R^d$. Let $X$ be the $n \times d$ matrix containing $X_1^T, X_2^T,
+\dots, X_n^T$ as rows. Let $\epsilon \in (0,1)$ and $k \in \{0,1,\dots,d\}$. If
+$n \ge \frac{C k \ln(ed/k)}{\epsilon^2}$, then the matrix $\frac{1}{\sqrt{n}}X$
+satisfies restricted isometry property with parameters $(\epsilon, k)$.
+\end{lemma}
+
+\begin{proof}
+For any $S \subseteq \{1,2,\dots,d\}$, let $Z_{i,S} \in \R^{|S|}$ be
+the restriction of $X_i$ to coordinates in $S$. Note that
+$$
+\Exp[Z_{i,S} Z_{i,S}^T] = I
+$$
+Let $Z_S$ be a $n \times |S|$ matrix containing $Z_{1,S}^T, Z_{2,S}^T, \dots, Z_{n,S}^T$ as rows.
+For any fixed vector $v \in \R^{|S|}$ of unit norm, we have
+\begin{align*}
+\Exp\left[\norm{Z_S v}_2^2\right]
+& = \sum_{i=1}^n \Exp\left[ \left(Z_{i,S}^T v \right)^2 \right] \\
+& = \sum_{i=1}^n \Exp\left[ v^T Z_{i,S} Z_{i,S}^T v \right] \\
+& = \sum_{i=1}^n v^T \Exp\left[ Z_{i,S} Z_{i,S}^T \right] v \\
+& = n \norm{v}_2^2 \\
+& = n \; .
+\end{align*}
+Note that $Z_{i,S}^T v$ is $1$-sub-Gaussian. By
+Lemma~\ref{lemma:sub-gaussian-square}, $(Z_{i,S}^T v)^2 -
+\Exp[(Z_{i,S}^T v)^2] = (Z_{i,S}^T v)^2 - 1$ is
+$11$-sub-exponential. According to Theorem~\ref{theorem:bernstein-inequality},
+$$
+\Pr\left[ \norm{Z_S v}_2^2 - n \ge t \right]
+= \Pr\left[ \sum_{i=1}^n \left(Z_{i,S}^T v \right)^2 - n \ge t \right]
+\le
+\exp\left( - \min \left\{ \frac{t^2}{242 n}, \ \frac{t}{22} \right\} \right) \; .
+$$
+Let $\S_{S} = \{ x \in \R^|S| ~:~ \norm{x}_2 = 1 \}$ be the unit sphere in $\R^|S|$.
+\end{proof}
+
+\end{document}
