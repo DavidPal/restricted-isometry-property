@@ -9,6 +9,8 @@
 
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\norm}[1]{\|{#1}\|}
+\renewcommand{\S}{\mathcal{S}}
+\newcommand{\B}{\mathcal{B}}
 
 \DeclareMathOperator*{\Var}{\mathbf{Var}}
 \DeclareMathOperator*{\Exp}{\mathbf{E}}
@@ -24,7 +26,9 @@
 \begin{definition}[Sub-Gaussian random variable]
 A random variable $X$ is called \emph{$\sigma^2$-sub-Gaussian} if
 $$
-\forall s \in \R \qquad \Exp\left[ \exp \left( s X \right) \right] \le \exp\left( \frac{\sigma^2 s^2}{2} \right) \; .
+\forall s \in \R \qquad
+\Exp\left[ \exp \left( s X \right) \right]
+\le \exp\left( \frac{\sigma^2 s^2}{2} \right) \; .
 $$
 \end{definition}
 
@@ -138,7 +142,9 @@ We have
 Let $X$ be a random vector in $\R^d$. We say that $X$ is \emph{$\sigma^2$-sub-Gaussian}
 if
 $$
-\forall u \in \R^d \qquad \Exp\left[ \exp \left( X^T u \right) \right] \le \exp\left( \frac{\sigma^2 \norm{u}_2^2}{2} \right) \; .
+\forall u \in \R^d \qquad
+\Exp\left[ \exp \left( X^T u \right) \right]
+\le \exp\left( \frac{\sigma^2 \norm{u}_2^2}{2} \right) \; .
 $$
 \end{definition}
 
@@ -147,7 +153,9 @@ $$
 \begin{definition}[Sub-exponential random variable]
 A random variable $X$ is called $\lambda$-sub-exponential if
 $$
-\forall s \in \left[ - \frac{1}{\lambda}, \frac{1}{\lambda} \right] \qquad \Exp\left[ \exp \left( s X \right) \right] \le \exp\left( \frac{\lambda^2 s^2}{2} \right) \; .
+\forall s \in \left[ - \frac{1}{\lambda}, \frac{1}{\lambda} \right] \qquad
+\Exp\left[ \exp \left( s X \right) \right]
+\le \exp\left( \frac{\lambda^2 s^2}{2} \right) \; .
 $$
 \end{definition}
 
@@ -259,21 +267,35 @@ We say that $X$ is \emph{isotropic} if $\Exp[X X^T] = I$ where $I$
 is the $d \times d$ identity matrix.
 \end{definition}
 
+\begin{definition}[$epsilon$-cover]
+Let $A \subseteq \R^d$ and let $\epsilon > 0$. We say that
+$B \subseteq A$ is an \emph{$\epsilon$-cover for $A$} if for any $x \in A$
+there exists $y \in B$ such that $\norm{x-y}_2 \le \epsilon$.
+\end{definition}
 
-\begin{lemma}
+\begin{lemma}[$\epsilon$-cover of sphere and ball]
+Let $\epsilon \in (0,1)$.
+Unit sphere $\S^{d-1} = \{ x \in \R^d ~:~ \norm{x}_2 = 1 \}$ in $\R^d$
+has an $\epsilon$-cover of cardinality at most $(3/\epsilon)^d$.
+Unit ball $\B_d = \{ x \in \R^d ~:~ \norm{x}_2 \le 1 \}$ in $\R^d$
+has an $\epsilon$-cover of cardinality at most $(3/\epsilon)^d$.
+\end{lemma}
+
+\begin{theorem}
 Let $X_1, X_2, \dots, X_n$ be independent isotropic $1$-sub-Gaussian random
 vectors in $\R^d$. Let $X$ be the $n \times d$ matrix containing $X_1^T, X_2^T,
 \dots, X_n^T$ as rows. Let $\epsilon \in (0,1)$ and $k \in \{0,1,\dots,d\}$. If
 $n \ge \frac{C k \ln(ed/k)}{\epsilon^2}$, then the matrix $\frac{1}{\sqrt{n}}X$
 satisfies restricted isometry property with parameters $(\epsilon, k)$.
-\end{lemma}
+\end{theorem}
 
 \begin{proof}
 For any $S \subseteq \{1,2,\dots,d\}$, let $Z_{i,S} \in \R^{|S|}$ be
 the restriction of $X_i$ to coordinates in $S$. Note that
 $$
-\Exp[Z_{i,S} Z_{i,S}^T] = I
+\Exp[Z_{i,S} Z_{i,S}^T] = I \; .
 $$
+In other words, $Z_{i,S}$ is isotropic.
 Let $Z_S$ be a $n \times |S|$ matrix containing $Z_{1,S}^T, Z_{2,S}^T, \dots, Z_{n,S}^T$ as rows.
 For any fixed vector $v \in \R^{|S|}$ of unit norm, we have
 \begin{align*}
@@ -289,12 +311,25 @@ Lemma~\ref{lemma:sub-gaussian-square}, $(Z_{i,S}^T v)^2 -
 \Exp[(Z_{i,S}^T v)^2] = (Z_{i,S}^T v)^2 - 1$ is
 $11$-sub-exponential. According to Theorem~\ref{theorem:bernstein-inequality},
 $$
-\Pr\left[ \norm{Z_S v}_2^2 - n \ge t \right]
-= \Pr\left[ \sum_{i=1}^n \left(Z_{i,S}^T v \right)^2 - n \ge t \right]
-\le
-\exp\left( - \min \left\{ \frac{t^2}{242 n}, \ \frac{t}{22} \right\} \right) \; .
+\Pr\left[ \norm{Z_S v}_2^2 - n \le - t \right]
+= \Pr\left[ \sum_{i=1}^n \left(\left(Z_{i,S}^T v \right)^2 - 1\right) \ge t \right]
+\le \exp\left( - \min \left\{ \frac{t^2}{242 n}, \ \frac{t}{22} \right\} \right) \; .
 $$
-Let $\S_{S} = \{ x \in \R^|S| ~:~ \norm{x}_2 = 1 \}$ be the unit sphere in $\R^|S|$.
+Therefore, for any $t \in [0,n]$,
+$$
+\Pr\left[ \norm{Z_S v}_2 \le \sqrt{n} - \sqrt{t} \right]
+\le \Pr\left[ \norm{Z_S v}_2 \le \sqrt{n - t} \right]
+\le \exp\left( - \frac{t^2}{242 n} \right) \; .
+$$
+
+Let $\S^{|S|-1} = \{ x \in \R^{|S|} ~:~ \norm{x}_2 = 1 \}$ be the unit sphere in $\R^{|S|}$.
+Note that $\S^{|S|-1}$ has $\frac{1}{2}$-cover $N_{|S|} \subseteq \S^{|S|-1}$ of cardinality
+at most $6^{|S|}$. Therefore, for any $x \in \S^{|S|-1}$ there exists $\delta \in \frac{1}{2}S^{|S|-1}$
+such that $\norm{x-y}_2 \le \frac{1}{2}$.
+\begin{align*}
+\Pr\left[ \min_{v \in \S^{|S|-1}} \norm{Z_S v}_2 \le \sqrt{n} - \sqrt{t} \right]
+& =
+\end{align*}
 \end{proof}
 
 \end{document}
